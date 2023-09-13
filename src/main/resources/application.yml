@@ -1,0 +1,22 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /bessisebzemeyve
+spring:
+  main:
+    banner-mode: console
+  datasource:
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:password}
+    url: jdbc:mysql://localhost:3306/bessisebzemeyve
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        user_sql_comments: true
+application:
+  version: 1.0
+  tittle: bessisebzemeyve

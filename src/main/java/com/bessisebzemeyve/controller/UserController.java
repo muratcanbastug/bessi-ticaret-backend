@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -37,9 +38,9 @@ public class UserController {
     @GetMapping("/all")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<UserResponseDTO>> searchAllUsers(
-                                                                @RequestParam(name = "name", defaultValue = "") String username){
-        LOGGER.info("A search request has been sent with username: {} from an admin.", username);
-        List<UserResponseDTO> userResponseDTOPage = userService.searchUser(username);
+                                                                @RequestParam(name = "name", defaultValue = "") String name){
+        LOGGER.info("A search request has been sent with name: {} from an admin.", name);
+        List<UserResponseDTO> userResponseDTOPage = userService.searchUser(name);
         return ResponseEntity.ok(userResponseDTOPage);
     }
 
@@ -51,6 +52,7 @@ public class UserController {
         return ResponseEntity.ok(userResponseDTO);
     }
 
+    @Transactional
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<UserResponseDTO> deleteUser(@PathVariable long id){
@@ -68,7 +70,7 @@ public class UserController {
     }
 
     @PutMapping("/password-update/{id}")
-    @PreAuthorize("hasRole('ROLE_TRAINER') ")
+    @PreAuthorize("hasRole('ROLE_ADMIN') ")
     public ResponseEntity<UserResponseDTO> updatePassword(@PathVariable long id, @Valid @RequestBody UpdatePasswordRequestDTO dto){
         LOGGER.info("An update password request has been sent");
         UserResponseDTO userResponseDTO = userService.updatePassword(dto, id);

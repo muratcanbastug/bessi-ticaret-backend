@@ -4,6 +4,7 @@ import com.bessisebzemeyve.entity.Product;
 import com.bessisebzemeyve.entity.Unit;
 import com.bessisebzemeyve.model.ProductResponseDTO;
 import com.bessisebzemeyve.model.SaveUpdateProductRequestDTO;
+import com.bessisebzemeyve.repository.OrderRepository;
 import com.bessisebzemeyve.repository.ProductRepository;
 import com.bessisebzemeyve.repository.UnitRepository;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -17,10 +18,12 @@ import java.util.stream.Collectors;
 public class ProductService {
     private final ProductRepository productRepository;
     private final UnitRepository unitRepository;
+    private final OrderRepository orderRepository;
 
-    public ProductService(ProductRepository productRepository, UnitRepository unitRepository) {
+    public ProductService(OrderRepository orderRepository, ProductRepository productRepository, UnitRepository unitRepository) {
         this.productRepository = productRepository;
         this.unitRepository = unitRepository;
+        this.orderRepository = orderRepository;
     }
 
     public List<ProductResponseDTO> getProductsByType(String productName, String type) {
@@ -39,6 +42,9 @@ public class ProductService {
 
     public ProductResponseDTO deleteProduct(long id) {
         Product product = productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("No product with given id."));
+        orderRepository.deleteAllByProduct_Id(id);
+        product.getUnits().clear();
+        productRepository.save(product);
         productRepository.deleteById(id);
         return generateResponse(product);
     }
@@ -71,7 +77,7 @@ public class ProductService {
         product.setType(dto.getType());
         Set<Unit> units = new java.util.HashSet<>(Set.of());
         for (int i = 0; i <(dto.getUnits().size()); i++) {
-            Unit unit = unitRepository.findByName(dto.getUnits().get(i)).orElseThrow(() -> new BadCredentialsException("Given product type does not exist."));
+            Unit unit = unitRepository.findByName(dto.getUnits().get(i)).orElseThrow(() -> new BadCredentialsException("Given product unit does not exist."));
             units.add(unit);
         }
         product.setUnits(units);

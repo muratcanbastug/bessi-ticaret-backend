@@ -68,7 +68,7 @@ public class WebSecurityConfig {
         http.cors().and().authorizeHttpRequests(customizer -> //
                 customizer.requestMatchers(AUTH_WHITELIST).anonymous() //
                         .requestMatchers(HttpMethod.POST, "/users").permitAll() //
-                        .anyRequest().hasAnyRole("ADMIN", "TRAINER")) //
+                        .anyRequest().hasAnyRole("ADMIN")) //
                 .exceptionHandling(customizer -> customizer.accessDeniedHandler( //
                         (req, resp, ex) -> resp.setStatus(HttpServletResponse.SC_FORBIDDEN)) // if someone tries to access protected resource but doesn't have enough permissions
                         .authenticationEntryPoint((req, resp, ex) -> resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED))) //

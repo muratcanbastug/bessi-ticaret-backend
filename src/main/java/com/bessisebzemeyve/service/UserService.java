@@ -2,6 +2,7 @@ package com.bessisebzemeyve.service;
 
 import com.bessisebzemeyve.entity.User;
 import com.bessisebzemeyve.model.*;
+import com.bessisebzemeyve.repository.OrderRepository;
 import com.bessisebzemeyve.repository.RoleRepository;
 import com.bessisebzemeyve.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -18,11 +19,13 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
+    private final OrderRepository orderRepository;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
+    public UserService(OrderRepository orderRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.roleRepository = roleRepository;
+        this.orderRepository = orderRepository;
     }
 
     public UserResponseDTO getUser(long id) {
@@ -43,13 +46,14 @@ public class UserService implements UserDetailsService {
         return generateResponse(savedUser);
     }
 
-    public List<UserResponseDTO> searchUser(String username) {
-        List<User> users = userRepository.findAllByUsernameContainsOrderByUsername(username);
+    public List<UserResponseDTO> searchUser(String name) {
+        List<User> users = userRepository.findAllByNameContainsOrderByName(name);
         return users.stream().map(this::generateResponse).toList();
     }
 
     public UserResponseDTO deleteUser(long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("Given id does not exist."));
+        orderRepository.deleteAllByUser_Id(id);
         userRepository.deleteById(id);
         return generateResponse(user);
     }
@@ -80,7 +84,7 @@ public class UserService implements UserDetailsService {
 
     private UserResponseDTO generateResponse(User user) {
         UserResponseDTO userResponseDTO = new UserResponseDTO();
-        userResponseDTO.setName(user.getUsername());
+        userResponseDTO.setName(user.getName());
         userResponseDTO.setId(user.getId());
         userResponseDTO.setAddress(user.getAddress());
         userResponseDTO.setUserName(user.getUsername());

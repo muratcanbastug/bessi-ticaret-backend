@@ -80,13 +80,18 @@ public class OrderService {
         return orderResponseDTOS;
     }
 
-//    public OrderItemDTO removeOrder(long id) {
-//        User user = getUserByName();
-//        Pokemon pokemon = pokemonRepository.findById(id).orElseThrow(() -> new BadCredentialsException("Bad Credentials"));
-//        Set<Pokemon> newCatchList = user.getCatchList();
-//        newCatchList = newCatchList.stream().filter(pokemon1 -> pokemon1.getId() != id).collect(Collectors.toSet());
-//        user.setCatchList(newCatchList);
-//        User savedUser = userRepository.save(user);
-//        return generateResponse(pokemon, savedUser);
-//    }
+    public OrderItemDTO removeOrder(long id) {
+        Order order = orderRepository.findById(id).orElseThrow(() -> new BadCredentialsException("Bad Credentials"));
+        orderRepository.deleteById(id);
+        OrderItemDTO orderItemDTO = new OrderItemDTO();
+        orderItemDTO.setProductId(order.getProduct().getId());
+        orderItemDTO.setNote(order.getNote());
+        orderItemDTO.setAmount(order.getAmount());
+        return orderItemDTO;
+    }
+
+    public boolean removeAllOrder() {
+        orderRepository.deleteAll();
+        return true;
+    }
 }

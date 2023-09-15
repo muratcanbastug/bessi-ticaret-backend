@@ -41,10 +41,18 @@ public class OrderController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAINER')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<OrderItemDTO> removeOrder(@PathVariable long id) {
         LOGGER.info("A remove order request has been sent.");
         OrderItemDTO orderItemDTO = orderService.removeOrder(id);
         return ResponseEntity.ok(orderItemDTO);
+    }
+
+    @DeleteMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Boolean> removeAllOrder() {
+        LOGGER.info("A remove all order request has been sent.");
+        boolean state = orderService.removeAllOrder();
+        return ResponseEntity.ok(state);
     }
 }

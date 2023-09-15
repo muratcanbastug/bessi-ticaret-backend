@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class ProductController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAINER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CUSTOMER')")
     public ResponseEntity<List<ProductResponseDTO>> getAllProducts(@RequestParam(name = "type", defaultValue = "ALL TYPES") String type,
                                                                    @RequestParam(name = "name", defaultValue = "") String productName){
         LOGGER.info("A get all products request has been sent.");
@@ -32,13 +33,14 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAINER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CUSTOMER')")
     public ResponseEntity<ProductResponseDTO> getProduct(@PathVariable long id){
         LOGGER.info("A get product request has been sent.");
         ProductResponseDTO productResponseDTOS = productService.getProduct(id);
         return ResponseEntity.ok(productResponseDTOS);
     }
 
+    @Transactional
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<ProductResponseDTO> deleteProduct(@PathVariable long id){
@@ -57,7 +59,7 @@ public class ProductController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<ProductResponseDTO> updatePokemon(@PathVariable long id, @Valid @RequestBody SaveUpdateProductRequestDTO dto){
+    public ResponseEntity<ProductResponseDTO> updateProduct(@PathVariable long id, @Valid @RequestBody SaveUpdateProductRequestDTO dto){
         LOGGER.info("A product update request has been sent with name: {}", dto.getName());
         ProductResponseDTO productResponseDTO = productService.updateProduct(dto, id);
         return ResponseEntity.ok(productResponseDTO);

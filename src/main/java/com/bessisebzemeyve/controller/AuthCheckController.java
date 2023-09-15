@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthCheckController {
 
     @GetMapping("/login")
-    @PreAuthorize("hasAnyRole('ROLE_TRAINER', 'ROLE_ADMIN') ")
+    @PreAuthorize("hasAnyRole('ROLE_CUSTOMER', 'ROLE_ADMIN') ")
     public ResponseEntity<Boolean> loginCheck(){
         return ResponseEntity.ok(true);
     }

@@ -51,6 +51,7 @@ public class ProductService {
 
     private ProductResponseDTO generateResponse(Product product) {
         ProductResponseDTO productResponseDTO = new ProductResponseDTO();
+        productResponseDTO.setId(product.getId());
         productResponseDTO.setName(product.getName());
         productResponseDTO.setType(product.getType());
         productResponseDTO.setUnits(product.getUnits().stream().map(Unit::getName).collect(Collectors.toSet()));

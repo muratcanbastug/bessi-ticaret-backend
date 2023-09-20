@@ -1,6 +1,6 @@
 package com.bessisebzemeyve.controller;
 
-import com.bessisebzemeyve.model.OrderItemDTO;
+import com.bessisebzemeyve.model.OrderItemResponseDTO;
 import com.bessisebzemeyve.model.OrderRequestDTO;
 import com.bessisebzemeyve.model.OrderResponseDTO;
 import com.bessisebzemeyve.service.OrderService;
@@ -26,9 +26,9 @@ public class OrderController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CUSTOMER')")
-    public ResponseEntity<OrderResponseDTO> addOrder(@Valid @RequestBody OrderRequestDTO dto) {
+    public ResponseEntity<Boolean> addOrder(@Valid @RequestBody OrderRequestDTO dto) {
         LOGGER.info("A create order request has been sent.");
-        OrderResponseDTO orderResponseDTO = orderService.addOrder(dto);
+        boolean orderResponseDTO = orderService.addOrder(dto);
         return ResponseEntity.ok(orderResponseDTO);
     }
 
@@ -42,9 +42,9 @@ public class OrderController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<OrderItemDTO> removeOrder(@PathVariable long id) {
+    public ResponseEntity<OrderItemResponseDTO> removeOrder(@PathVariable long id) {
         LOGGER.info("A remove order request has been sent.");
-        OrderItemDTO orderItemDTO = orderService.removeOrder(id);
+        OrderItemResponseDTO orderItemDTO = orderService.removeOrder(id);
         return ResponseEntity.ok(orderItemDTO);
     }
 

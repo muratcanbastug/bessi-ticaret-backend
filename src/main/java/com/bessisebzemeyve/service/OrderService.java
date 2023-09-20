@@ -3,7 +3,8 @@ package com.bessisebzemeyve.service;
 import com.bessisebzemeyve.entity.Order;
 import com.bessisebzemeyve.entity.Product;
 import com.bessisebzemeyve.entity.User;
-import com.bessisebzemeyve.model.OrderItemDTO;
+import com.bessisebzemeyve.model.OrderItemRequestDTO;
+import com.bessisebzemeyve.model.OrderItemResponseDTO;
 import com.bessisebzemeyve.model.OrderRequestDTO;
 import com.bessisebzemeyve.model.OrderResponseDTO;
 import com.bessisebzemeyve.repository.OrderRepository;
@@ -38,27 +39,21 @@ public class OrderService {
         return userRepository.findByUsername(name);
     }
 
-    public OrderResponseDTO addOrder(OrderRequestDTO dto) {
+    public boolean addOrder(OrderRequestDTO dto) {
         User user = getUserByName();
-        List<OrderItemDTO> orderItems = dto.getOrderItemDTOList();
-        for (OrderItemDTO orderItemDTO : orderItems) {
+        List<OrderItemRequestDTO> orderItems = dto.getOrderItemDTOList();
+        for (OrderItemRequestDTO orderItemDTO : orderItems) {
             Product product = productRepository.findById(orderItemDTO.getProductId()).orElseThrow(() -> new BadCredentialsException("Bad Credentials"));
             Order order = new Order();
             order.setAmount(orderItemDTO.getAmount());
             order.setNote(orderItemDTO.getNote());
             order.setProduct(product);
             order.setUser(user);
+            order.setUnit(orderItemDTO.getUnit());
             orderRepository.save(order);
         }
 
-        return generateResponse(dto.getOrderItemDTOList(), user);
-    }
-
-    private OrderResponseDTO generateResponse(List<OrderItemDTO> orderItems, User user) {
-        OrderResponseDTO orderResponseDTO = new OrderResponseDTO();
-        orderResponseDTO.setOrderItemDTOList(orderItems);
-        orderResponseDTO.setUser(user);
-        return orderResponseDTO;
+        return true;
     }
 
     public List<OrderResponseDTO> getOrders() {
@@ -67,11 +62,14 @@ public class OrderService {
         for (User user : users) {
             OrderResponseDTO orderResponseDTO = new OrderResponseDTO();
             orderResponseDTO.setUser(user);
-            List<OrderItemDTO> orderItemDTOs = orderRepository.findAllByUserIdOrderByAmount(user.getId()).stream().map(order -> {
-                OrderItemDTO orderItemDTO = new OrderItemDTO();
+            List<OrderItemResponseDTO> orderItemDTOs = orderRepository.findAllByUserIdOrderByAmount(user.getId()).stream().map(order -> {
+                OrderItemResponseDTO orderItemDTO = new OrderItemResponseDTO();
                 orderItemDTO.setAmount(order.getAmount());
                 orderItemDTO.setNote(order.getNote());
                 orderItemDTO.setProductId(order.getProduct().getId());
+                orderItemDTO.setUnit(order.getUnit());
+                orderItemDTO.setProductName(order.getProduct().getName());
+                orderItemDTO.setOrderId(order.getId());
                 return orderItemDTO;
             }).toList();
             orderResponseDTO.setOrderItemDTOList(orderItemDTOs);
@@ -80,13 +78,16 @@ public class OrderService {
         return orderResponseDTOS;
     }
 
-    public OrderItemDTO removeOrder(long id) {
+    public OrderItemResponseDTO removeOrder(long id) {
         Order order = orderRepository.findById(id).orElseThrow(() -> new BadCredentialsException("Bad Credentials"));
         orderRepository.deleteById(id);
-        OrderItemDTO orderItemDTO = new OrderItemDTO();
-        orderItemDTO.setProductId(order.getProduct().getId());
-        orderItemDTO.setNote(order.getNote());
+        OrderItemResponseDTO orderItemDTO = new OrderItemResponseDTO();
         orderItemDTO.setAmount(order.getAmount());
+        orderItemDTO.setNote(order.getNote());
+        orderItemDTO.setProductId(order.getProduct().getId());
+        orderItemDTO.setUnit(order.getUnit());
+        orderItemDTO.setProductName(order.getProduct().getName());
+        orderItemDTO.setOrderId(order.getId());
         return orderItemDTO;
     }
 

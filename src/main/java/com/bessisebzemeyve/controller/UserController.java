@@ -1,9 +1,6 @@
 package com.bessisebzemeyve.controller;
 
-import com.bessisebzemeyve.model.SaveUserRequestDTO;
-import com.bessisebzemeyve.model.UpdatePasswordRequestDTO;
-import com.bessisebzemeyve.model.UpdateUserRequestDTO;
-import com.bessisebzemeyve.model.UserResponseDTO;
+import com.bessisebzemeyve.model.*;
 import com.bessisebzemeyve.service.UserService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -33,6 +30,13 @@ public class UserController {
         LOGGER.info("A get user request has been sent with {} from an admin.", id);
         UserResponseDTO userResponseDTO = userService.getUser(id);
         return ResponseEntity.ok(userResponseDTO);
+    }
+
+    @GetMapping()
+    public ResponseEntity<UserRoleResponseDTO> getUserRole(){
+        LOGGER.info("A get user role has been sent.");
+        UserRoleResponseDTO userRoleResponseDTO = userService.getUserRole();
+        return ResponseEntity.ok(userRoleResponseDTO);
     }
 
     @GetMapping("/all")

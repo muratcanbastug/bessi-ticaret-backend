@@ -5,14 +5,14 @@ import com.bessisebzemeyve.entity.User;
 import java.util.List;
 
 public class OrderResponseDTO {
-    private List<OrderItemDTO> orderItemDTOList;
+    private List<OrderItemResponseDTO> orderItemDTOList;
     private User user;
 
-    public List<OrderItemDTO> getOrderItemDTOList() {
+    public List<OrderItemResponseDTO> getOrderItemDTOList() {
         return orderItemDTOList;
     }
 
-    public void setOrderItemDTOList(List<OrderItemDTO> orderItemDTOList) {
+    public void setOrderItemDTOList(List<OrderItemResponseDTO> orderItemDTOList) {
         this.orderItemDTOList = orderItemDTOList;
     }
 

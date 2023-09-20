@@ -3,13 +3,13 @@ package com.bessisebzemeyve.model;
 import java.util.List;
 
 public class OrderRequestDTO {
-    private List<OrderItemDTO> orderItemDTOList;
+    private List<OrderItemRequestDTO> orderItemDTOList;
 
-    public List<OrderItemDTO> getOrderItemDTOList() {
+    public List<OrderItemRequestDTO> getOrderItemDTOList() {
         return orderItemDTOList;
     }
 
-    public void setOrderItemDTOList(List<OrderItemDTO> orderItemDTOList) {
+    public void setOrderItemDTOList(List<OrderItemRequestDTO> orderItemDTOList) {
         this.orderItemDTOList = orderItemDTOList;
     }
 }

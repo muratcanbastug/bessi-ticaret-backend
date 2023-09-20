@@ -6,13 +6,18 @@ import com.bessisebzemeyve.repository.OrderRepository;
 import com.bessisebzemeyve.repository.RoleRepository;
 import com.bessisebzemeyve.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -28,9 +33,23 @@ public class UserService implements UserDetailsService {
         this.orderRepository = orderRepository;
     }
 
+    private User getUserByName() {
+        String name = Optional.ofNullable(SecurityContextHolder.getContext())
+                .map(SecurityContext::getAuthentication)
+                .map(Principal::getName).orElseThrow(() -> new BadCredentialsException("Bad Credentials"));
+        return userRepository.findByUsername(name);
+    }
+
     public UserResponseDTO getUser(long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("No user with given id."));
         return generateResponse(user);
+    }
+
+    public UserRoleResponseDTO getUserRole(){
+        User user = getUserByName();
+        UserRoleResponseDTO userRoleResponseDTO = new UserRoleResponseDTO();
+        userRoleResponseDTO.setRole(user.getRole().getName());
+        return userRoleResponseDTO;
     }
 
     public UserResponseDTO saveUser(SaveUserRequestDTO dto) {
